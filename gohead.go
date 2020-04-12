@@ -14,7 +14,7 @@ func NewGoHead() (*GoHead, error) {
 	return goHead, nil
 }
 
-func Probe(target string) (map[string][]string, string) {
+func Probe(target string) /*(map[string][]string, string)*/ {
 	fmt.Println(target)
 	client := &http.Client{
 		Timeout: 8,
@@ -28,16 +28,17 @@ func Probe(target string) (map[string][]string, string) {
 
 	req, err := http.NewRequest("GET", target, nil)
 	if err != nil {
-		return nil, target
+		//return nil, target
 	}
 	req.Header.Add("Accept", "*/*")
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, target
+		//return nil, target
 	}
 
 	defer resp.Body.Close()
 
-	return resp.Header, target
+	fmt.Println(resp.Header)
+	//return resp.Header, target
 }
