@@ -2,7 +2,7 @@ package gohead
 
 import (
 	"crypto/tls"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"time"
 )
@@ -15,7 +15,7 @@ func NewGoHead() (*GoHead, error) {
 	return goHead, nil
 }
 
-func Probe(target string) (io.ReadCloser, map[string][]string, string) {
+func Probe(target string) (string, map[string][]string, string) {
 	client := &http.Client{
 		Timeout: 8 * time.Second,
 		Transport: &http.Transport{
@@ -28,16 +28,19 @@ func Probe(target string) (io.ReadCloser, map[string][]string, string) {
 
 	req, err := http.NewRequest("GET", target, nil)
 	if err != nil {
-		return nil, nil, target
+		return "", nil, target
 	}
 	req.Header.Add("Accept", "*/*")
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, nil, target
+		return "", nil, target
 	}
 
-	defer resp.Body.Close()
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", resp.Header, target
+	}
 
-	return resp.Body, resp.Header, target
+	return string(body), resp.Header, target
 }
