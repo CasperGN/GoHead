@@ -15,7 +15,6 @@ func NewGoHead() (*GoHead, error) {
 }
 
 func Probe(target string) (map[string][]string, string) {
-	fmt.Println(target)
 	client := &http.Client{
 		Timeout: 8,
 		Transport: &http.Transport{
@@ -28,12 +27,14 @@ func Probe(target string) (map[string][]string, string) {
 
 	req, err := http.NewRequest("GET", target, nil)
 	if err != nil {
+		fmt.Println(err)
 		return nil, target
 	}
 	req.Header.Add("Accept", "*/*")
 
 	resp, err := client.Do(req)
 	if err != nil {
+		fmt.Println(err)
 		return nil, target
 	}
 
