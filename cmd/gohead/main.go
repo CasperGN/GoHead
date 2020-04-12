@@ -99,6 +99,7 @@ func main() {
 						fmt.Printf("%s: %s\n", key, option)
 					}
 				}
+				fmt.Println("")
 
 			}
 			waitGroup.Done()
