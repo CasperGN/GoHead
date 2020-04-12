@@ -95,7 +95,7 @@ func main() {
 func contains(header string) bool {
 	benignHeaders := [12]string{
 		"Content-Language", "X-Ua-Compatible", "Last-Modified", "Date", "Etag", "Connection", "Content-Length", "Pragma",
-		"Expires", "Server-Timing", "X-Content-Type-Options", "Cache-Control"
+		"Expires", "Server-Timing", "X-Content-Type-Options", "Cache-Control",
 	}
 	for _, benign := range benignHeaders {
 		if benign == header {
