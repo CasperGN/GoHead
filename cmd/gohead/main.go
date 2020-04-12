@@ -100,7 +100,8 @@ func main() {
 					}
 				}
 				fmt.Println("")
-
+				fmt.Printf("%s", body)
+				fmt.Println("")
 			}
 			waitGroup.Done()
 		}()
