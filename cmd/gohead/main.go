@@ -82,10 +82,10 @@ func main() {
 		waitGroup.Add(1)
 		go func() {
 			for asset := range assets {
-				result, target := gohead.Probe(asset)
-				if len(result) > 0 {
+				body, headers, target := gohead.Probe(asset)
+				if len(headers) > 0 {
 					fmt.Printf("%s\n", target)
-					for key, value := range result {
+					for key, value := range headers {
 						if exclusion {
 							if contains(excludedHeaders, key) {
 								// Header is irrelevant
