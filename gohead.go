@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
+	"time"
 )
 
 type GoHead struct{}
@@ -16,7 +17,7 @@ func NewGoHead() (*GoHead, error) {
 
 func Probe(target string) (map[string][]string, string) {
 	client := &http.Client{
-		Timeout: 8,
+		Timeout: 8 * time.Second,
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: true,
