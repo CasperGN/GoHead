@@ -37,6 +37,7 @@ func main() {
 	flag.Parse()
 
 	if target == "" && targets == "" {
+		printHeader()
 		flag.Usage()
 		return
 	}
@@ -66,7 +67,15 @@ func main() {
 				if len(result) > 0 {
 					fmt.Printf("%s\n", target)
 					for key, value := range result {
-						fmt.Printf("%s: %s\n", key, value)
+						if contains(key) {
+							// Header is irrelevant
+							continue
+						}
+						option := ""
+						for val := range value {
+							option += val
+						}
+						fmt.Printf("%s: %s\n", key, option)
 					}
 				}
 
@@ -81,6 +90,16 @@ func main() {
 	}
 	close(assets)
 	waitGroup.Wait()
+}
+
+func contains(header string) bool {
+	benignHeaders := [6]string{"Content-Language", "X-Ua-Compatible", "Last-Modified", "Date", "Etag", "Connection"}
+	for _, benign := range benignHeaders {
+		if benign == header {
+			return true
+		}
+	}
+	return false
 }
 
 func printHeader() {
