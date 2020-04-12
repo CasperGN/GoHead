@@ -1,6 +1,8 @@
 package gohead
 
 import (
+	"crypto/tls"
+	"fmt"
 	"net/http"
 )
 
@@ -13,12 +15,29 @@ func NewGoHead() (*GoHead, error) {
 }
 
 func Probe(target string) (map[string][]string, string) {
-	resp, _ := http.Get(target)
-
-	var result map[string][]string
-	for key, value := range resp.Header {
-		result[key] = value
+	fmt.Println(target)
+	client := &http.Client{
+		Timeout: 8,
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+			Proxy: http.ProxyFromEnvironment,
+		},
 	}
 
-	return result, target
+	req, err := http.NewRequest("GET", target, nil)
+	if err != nil {
+		return nil, target
+	}
+	req.Header.Add("Accept", "*/*")
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, target
+	}
+
+	defer resp.Body.Close()
+
+	return resp.Header, target
 }
