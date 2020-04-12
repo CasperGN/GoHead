@@ -24,7 +24,7 @@ func init() {
 	flag.StringVar(&target, "target", "", "Supply single target for probing.")
 	flag.StringVar(&targets, "targets", "", "Supply a file of targets seperated by newlines.")
 	flag.IntVar(&threads, "threads", 5, "Number of threads")
-	flag.BoolVar(&silent, "silent", true, "Print header (default true).")
+	flag.BoolVar(&silent, "silent", false, "Print header (default false).")
 }
 
 func main() {
@@ -51,7 +51,7 @@ func main() {
 	}
 	defer asset.Close()
 
-	if silent {
+	if !silent {
 		printHeader()
 	}
 
@@ -65,7 +65,7 @@ func main() {
 				result, target := gohead.Probe(asset)
 
 				if len(result) > 0 {
-					fmt.Printf(target)
+					fmt.Printf("%s\n", target)
 					for key, value := range result {
 						fmt.Printf("%s: %s\n", key, value)
 					}
