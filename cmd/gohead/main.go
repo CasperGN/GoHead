@@ -16,6 +16,7 @@ import (
 var (
 	target  string
 	targets string
+	exclude string
 	threads int
 	silent  bool
 )
@@ -23,6 +24,7 @@ var (
 func init() {
 	flag.StringVar(&target, "target", "", "Supply single target for probing.")
 	flag.StringVar(&targets, "targets", "", "Supply a file of targets seperated by newlines.")
+	flag.StringVar(&exclude, "exclude", "", "Supply a file of headers to exclude seperated by newlines.")
 	flag.IntVar(&threads, "threads", 5, "Number of threads")
 	flag.BoolVar(&silent, "silent", false, "Print header (default false).")
 }
@@ -30,9 +32,13 @@ func init() {
 func main() {
 
 	var (
-		asset io.ReadCloser
-		err   error
+		asset           io.ReadCloser
+		file            io.ReadCloser
+		excludedHeaders []string
+		exclusion       bool
+		err             error
 	)
+	exclusion = false
 
 	flag.Parse()
 
@@ -40,6 +46,19 @@ func main() {
 		printHeader()
 		flag.Usage()
 		return
+	}
+
+	if exclude != "" {
+		exclusion = true
+		file, err = os.Open(exclude)
+		if err != nil {
+			fmt.Printf("Error: Cannot read targets file. Name: %s, error: %s", targets, err)
+		}
+		fRead := bufio.NewScanner(file)
+		for fRead.Scan() {
+			excludedHeaders = append(excludedHeaders, fRead.Text())
+		}
+		file.Close()
 	}
 
 	if target != "" {
@@ -67,9 +86,11 @@ func main() {
 				if len(result) > 0 {
 					fmt.Printf("%s\n", target)
 					for key, value := range result {
-						if contains(key) {
-							// Header is irrelevant
-							continue
+						if exclusion {
+							if contains(excludedHeaders, key) {
+								// Header is irrelevant
+								continue
+							}
 						}
 						option := ""
 						for _, val := range value {
@@ -92,13 +113,9 @@ func main() {
 	waitGroup.Wait()
 }
 
-func contains(header string) bool {
-	benignHeaders := [12]string{
-		"Content-Language", "X-Ua-Compatible", "Last-Modified", "Date", "Etag", "Connection", "Content-Length", "Pragma",
-		"Expires", "Server-Timing", "X-Content-Type-Options", "Cache-Control",
-	}
-	for _, benign := range benignHeaders {
-		if benign == header {
+func contains(excludedHeaders []string, header string) bool {
+	for _, excluded := range excludedHeaders {
+		if excluded == header {
 			return true
 		}
 	}
