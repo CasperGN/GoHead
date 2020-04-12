@@ -63,7 +63,6 @@ func main() {
 		go func() {
 			for asset := range assets {
 				result, target := gohead.Probe(asset)
-
 				if len(result) > 0 {
 					fmt.Printf("%s\n", target)
 					for key, value := range result {
