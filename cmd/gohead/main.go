@@ -72,7 +72,7 @@ func main() {
 							continue
 						}
 						option := ""
-						for val := range value {
+						for _, val := range value {
 							option += val
 						}
 						fmt.Printf("%s: %s\n", key, option)
