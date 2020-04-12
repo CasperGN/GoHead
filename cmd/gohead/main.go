@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"regexp"
 	"strings"
 	"sync"
 
@@ -75,6 +76,8 @@ func main() {
 		printHeader()
 	}
 
+	intIP, _ := regexp.Compile(`(10(\.[1-9]{1}[0-9]{1,2}){3})|(172(\.[1-9]{1}[0-9]{1,2}){3})|(192(\.[1-9]{1}[0-9]{1,2}){3})`)
+
 	var waitGroup sync.WaitGroup
 	assets := make(chan string)
 
@@ -82,8 +85,12 @@ func main() {
 		waitGroup.Add(1)
 		go func() {
 			for asset := range assets {
+				var regMatch []string
 				body, headers, target := gohead.Probe(asset)
 				if len(headers) > 0 {
+					for _, match := range intIP.FindAllString(body, -1) {
+						regMatch = append(regMatch, match)
+					}
 					fmt.Printf("%s\n", target)
 					for key, value := range headers {
 						if exclusion {
@@ -96,11 +103,23 @@ func main() {
 						for _, val := range value {
 							option += val
 						}
+						for _, match := range intIP.FindAllString(option, -1) {
+							regMatch = append(regMatch, match)
+						}
 						fmt.Printf("%s: %s\n", key, option)
 					}
 				}
-				fmt.Println("")
-				fmt.Printf("%s", body)
+				if len(regMatch) > 0 {
+					ips := ""
+					for _, ip := range regMatch {
+						if strings.Contains(ips, ip) {
+							continue
+						}
+						ips += ip + " "
+					}
+					fmt.Println("")
+					fmt.Printf("Internal IPs: %s", ips)
+				}
 				fmt.Println("")
 			}
 			waitGroup.Done()
