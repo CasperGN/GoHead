@@ -9,7 +9,8 @@ import (
 	"os"
 	"strings"
 	"sync"
-	"github.com/CasperGN/GoHead"
+
+	gohead "github.com/CasperGN/GoHead"
 )
 
 var (
@@ -56,19 +57,23 @@ func main() {
 
 	var waitGroup sync.WaitGroup
 	assets := make(chan string)
-	var goHead = goHead.NewGoHead()
 
 	for i := 0; i < threads; i++ {
 		waitGroup.Add(1)
 		go func() {
 			for asset := range assets {
-				result, target := goHead.Probe(asset)
-				for key, value in result {
-					fmt.Printf("%s: %s", key, value)
+				result, target := gohead.Probe(asset)
+
+				if len(result) > 0 {
+					fmt.Printf(target)
+					for key, value := range result {
+						fmt.Printf("%s: %s", key, value)
+					}
 				}
+
 			}
 			waitGroup.Done()
-		}
+		}()
 	}
 
 	fRead := bufio.NewScanner(asset)
