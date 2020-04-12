@@ -4,26 +4,28 @@ Get interesting http headers from target(s)
 ## Run
 ```
 
-              ______      __  __               __ 
-             / ____/___  / / / /__  ____ _____/ / 
-            / / __/ __ \/ /_/ / _ \/ __ \/ __  /  
+              ______      __  __               __
+             / ____/___  / / / /__  ____ _____/ /
+            / / __/ __ \/ /_/ / _ \/ __ \/ __  /
         __ / /_/ / /_/ / __  /  __/ /_/ / /_/ / __
       _/_/ \____/\____/_/ /_/\___/\__,_/\__,_/_/_/
-    _/_/___________________________________ _/_/  
-  _/_//_____/_____/_____/_____/_____/_____//_/    
- /_/                                     /_/      			  
-		
+    _/_/___________________________________ _/_/
+  _/_//_____/_____/_____/_____/_____/_____//_/
+ /_/                                     /_/
+
 Usage of ./gohead:
   -exclude string
-    	Supply a file of headers to exclude seperated by newlines.
+        Supply a file of headers to exclude seperated by newlines.
+  -outdir string
+        Supply a directory to output the result to. Writes 1 file per supplied target.
   -silent
-    	Print header (default false).
+        Print header (default false).
   -target string
-    	Supply single target for probing.
+        Supply single target for probing.
   -targets string
-    	Supply a file of targets seperated by newlines.
+        Supply a file of targets seperated by newlines.
   -threads int
-    	Number of threads (default 5)
+        Number of threads (default 5)
 
 $ ./gohead -target https://google.com
 
