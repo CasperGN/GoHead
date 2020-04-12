@@ -67,7 +67,7 @@ func main() {
 				if len(result) > 0 {
 					fmt.Printf(target)
 					for key, value := range result {
-						fmt.Printf("%s: %s", key, value)
+						fmt.Printf("%s: %s\n", key, value)
 					}
 				}
 

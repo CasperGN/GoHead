@@ -2,7 +2,6 @@ package gohead
 
 import (
 	"crypto/tls"
-	"fmt"
 	"net/http"
 	"time"
 )
@@ -28,19 +27,16 @@ func Probe(target string) (map[string][]string, string) {
 
 	req, err := http.NewRequest("GET", target, nil)
 	if err != nil {
-		fmt.Println(err)
 		return nil, target
 	}
 	req.Header.Add("Accept", "*/*")
 
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Println(err)
 		return nil, target
 	}
 
 	defer resp.Body.Close()
 
-	fmt.Println(resp.Header)
 	return resp.Header, target
 }
