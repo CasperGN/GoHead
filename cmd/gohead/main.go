@@ -119,7 +119,7 @@ func main() {
 						data += key + ": " + option + "\n"
 					}
 				}
-				ips := ""
+				ips := "Internal IPs: "
 				if len(regMatch) > 0 {
 					for _, ip := range regMatch {
 						if strings.Contains(ips, ip) {
@@ -128,7 +128,7 @@ func main() {
 						ips += ip + " "
 					}
 					fmt.Println("")
-					fmt.Printf("Internal IPs: %s", ips)
+					fmt.Printf(ips)
 				}
 				data += ips
 
