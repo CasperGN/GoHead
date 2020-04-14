@@ -31,7 +31,7 @@ func Probe(target string) (string, map[string][]string, string) {
 		return "", nil, target
 	}
 	req.Header.Add("Accept", "*/*")
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0")
+	req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0")
 
 	resp, err := client.Do(req)
 	if err != nil {
