@@ -90,13 +90,13 @@ func main() {
 	intIP, _ := regexp.Compile(`(10(\.[1-9]{1}[0-9]{1,2}){3})|(172(\.[1-9]{1}[0-9]{1,2}){3})|(192(\.[1-9]{1}[0-9]{1,2}){3})`)
 	jsFiles, _ := regexp.Compile(`src="([a-zA-Z0-9\./]+.js)"`)
 	urlFind, _ := regexp.Compile(`(/[a-zA-Z0-9\.]+){2,10}`)
-	awsKey, _ := regexp.Compile(`"(AKIA[0-9A-Z]{16})"`)
+	/*awsKey, _ := regexp.Compile(`"(AKIA[0-9A-Z]{16})"`)
 	awsSecKey, _ := regexp.Compile(`"([0-9a-zA-Z/+]{40})"`)
 	azureSub, _ := regexp.Compile(`"([a-z0-9]{32})"`)
 	mailGun, _ := regexp.Compile(`"(key-[0-9a-zA-Z]{32})"`)
 	fbKey, _ := regexp.Compile(`"([0-9]{13,17})"`)
 	fbSecKey, _ := regexp.Compile(`"([0-9a-f]{32})"`)
-	passwd, _ := regexp.Compile(`"((Pass:|pass:|Pass=|pass=|Password:|password:|Password=|password=)(.*[!@#$%^&*a-zA-Z0-9]))"`)
+	passwd, _ := regexp.Compile(`"((Pass:|pass:|Pass=|pass=|Password:|password:|Password=|password=)(.*[!@#$%^&*a-zA-Z0-9]))"`)*/
 
 	var waitGroup sync.WaitGroup
 	assets := make(chan string)
@@ -133,11 +133,10 @@ func main() {
 								fmt.Printf("Error on reading body from %s%s: %s", asset, match[1], err)
 								continue
 							}
-							//fmt.Println(string(jsFile))
 							for _, match := range urlFind.FindAllStringSubmatch(string(jsFile), -1) {
 								urlMap[asset+matchedUrl] = match[0]
 							}
-							for _, match := range awsKey.FindAllStringSubmatch(string(jsFile), -1) {
+							/*for _, match := range awsKey.FindAllStringSubmatch(string(jsFile), -1) {
 								keysFound[asset+matchedUrl][match[1]] = "awskey"
 							}
 							for _, match := range awsSecKey.FindAllStringSubmatch(string(jsFile), -1) {
@@ -163,7 +162,7 @@ func main() {
 							for _, match := range passwd.FindAllStringSubmatch(string(jsFile), -1) {
 								fmt.Println("Passwd:")
 								fmt.Println(match[1])
-							}
+							}*/
 						}
 					}
 					for _, match := range intIP.FindAllString(body, -1) {
