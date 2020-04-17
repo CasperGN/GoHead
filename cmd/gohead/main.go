@@ -89,7 +89,7 @@ func main() {
 
 	intIP, _ := regexp.Compile(`(10(\.[1-9]{1}[0-9]{1,2}){3})|(172(\.[1-9]{1}[0-9]{1,2}){3})|(192(\.[1-9]{1}[0-9]{1,2}){3})`)
 	jsFiles, _ := regexp.Compile(`src="([a-zA-Z0-9\./]+.js)"`)
-	urlFind, _ := regexp.Compile(`(/[a-zA-Z0-9\.]+){2,10}`)
+	urlFind, _ := regexp.Compile(`((/[a-zA-Z0-9\.]+){2,10})`)
 	/*awsKey, _ := regexp.Compile(`"(AKIA[0-9A-Z]{16})"`)
 	awsSecKey, _ := regexp.Compile(`"([0-9a-zA-Z/+]{40})"`)
 	azureSub, _ := regexp.Compile(`"([a-z0-9]{32})"`)
@@ -107,8 +107,8 @@ func main() {
 			for asset := range assets {
 				data := ""
 				var regMatch []string
-				urlMap := make(map[string]string)
-				keysFound := make(map[string]map[string]string)
+				urlMap := make(map[string][]string)
+				//keysFound := make(map[string]map[string]string)
 				body, headers, target := gohead.Probe(asset)
 				if len(headers) > 0 {
 					if secrets {
@@ -123,18 +123,25 @@ func main() {
 							}
 							jsBody, err := http.Get(asset + matchedUrl)
 							if err != nil {
-								fmt.Printf("Error on GET for %s%s: %s", asset, match[1], err)
+								//fmt.Printf("Error on GET for %s%s: %s", asset, match[1], err)
 								continue
 							}
 
 							jsFile, err := ioutil.ReadAll(jsBody.Body)
 							jsBody.Body.Close()
 							if err != nil {
-								fmt.Printf("Error on reading body from %s%s: %s", asset, match[1], err)
+								//fmt.Printf("Error on reading body from %s%s: %s", asset, match[1], err)
 								continue
 							}
+							urlMap[asset+matchedUrl] = append(urlMap[asset+matchedUrl], asset+matchedUrl)
 							for _, match := range urlFind.FindAllStringSubmatch(string(jsFile), -1) {
-								urlMap[asset+matchedUrl] = match[0]
+								//fmt.Println(match)
+								//fmt.Println(match[0])
+								urlMap[asset+matchedUrl] = append(urlMap[asset+matchedUrl], match[0])
+								//for _, url := range match {
+								//	urlMap[asset+matchedUrl] = append(urlMap[asset+matchedUrl], url)
+								//}
+
 							}
 							/*for _, match := range awsKey.FindAllStringSubmatch(string(jsFile), -1) {
 								keysFound[asset+matchedUrl][match[1]] = "awskey"
@@ -168,7 +175,9 @@ func main() {
 					for _, match := range intIP.FindAllString(body, -1) {
 						regMatch = append(regMatch, match)
 					}
-					fmt.Printf("%s\n", target)
+					//fmt.Printf("%s\n", target)
+					data += "target: " + target
+
 					for key, value := range headers {
 						if exclusion {
 							if contains(excludedHeaders, key) {
@@ -183,41 +192,52 @@ func main() {
 						for _, match := range intIP.FindAllString(option, -1) {
 							regMatch = append(regMatch, match)
 						}
-						fmt.Printf("%s: %s\n", key, option)
-						data += key + ": " + option + "\n"
+						//fmt.Printf("header: %s: %s\n", key, option)
+						data += "\nheader: " + key + ": " + option
+						//fmt.Printf("%s: %s\n", key, option)
+						//data += key + ": " + option + "\n"
 					}
 				}
 				ips := ""
 				if len(regMatch) > 0 {
-					data += "\n"
-					ips += "Internal IPs:"
+					//data += "\n"
+					ips += "\ninternal IPs:"
 					for _, ip := range regMatch {
 						if strings.Contains(ips, ip) {
 							continue
 						}
 						ips += ip + " "
 					}
-					fmt.Println("")
-					fmt.Printf(ips)
+					//fmt.Println("")
+					//fmt.Printf(ips)
+					data += ips
 				}
-				data += ips
 
 				if secrets {
 					if len(urlMap) > 0 {
-						data += "\nPossible endpoints:\n"
+						//data += "\nPossible endpoints:\n"
 						for key, value := range urlMap {
-							data += key + ": " + value + "\n"
+							for _, url := range value {
+								if suffixes(url) {
+									data += "\nfile: " + key + ": " + url
+								} else {
+									data += "\nendpoint: " + key + ": " + url
+								}
+							}
+							//data += key + ": " + value + "\n"
 						}
 					}
-					if len(keysFound) > 0 {
+					/*if len(keysFound) > 0 {
 						data += "\nPossible keys:\n"
 						for key, value := range keysFound {
 							for k, v := range value {
 								data += v + ": " + k + " in " + key
 							}
 						}
-					}
+					}*/
 				}
+
+				fmt.Println(data)
 
 				if output {
 					filename := strings.Replace(strings.Split(asset, ":")[1], "/", "", -1)
@@ -236,7 +256,7 @@ func main() {
 					}
 					f.Sync()
 				}
-				fmt.Println("")
+				//fmt.Println("")
 			}
 			waitGroup.Done()
 		}()
@@ -248,6 +268,16 @@ func main() {
 	}
 	close(assets)
 	waitGroup.Wait()
+}
+
+func suffixes(url string) bool {
+	suffixArray := [11]string{".js", ".html", ".asp", ".aspx", ".php", ".htm", ".gif", ".jpg", ".jpeg", ".png", ".txt"}
+	for _, suffix := range suffixArray {
+		if strings.HasSuffix(url, suffix) {
+			return true
+		}
+	}
+	return false
 }
 
 func contains(excludedHeaders []string, header string) bool {
