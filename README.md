@@ -1,4 +1,6 @@
 # GoHead
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FCasperGN%2FGoHead.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FCasperGN%2FGoHead?ref=badge_shield)
+
 Get interesting http headers from target(s)
 
 ## Run
@@ -50,3 +52,7 @@ Content-Type: text/html; charset=ISO-8859-1
 P3p: CP="This is not a P3P policy! See g.co/p3phelp for more info."
 X-Frame-Options: SAMEORIGIN
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FCasperGN%2FGoHead.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FCasperGN%2FGoHead?ref=badge_large)
