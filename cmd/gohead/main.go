@@ -88,7 +88,7 @@ func main() {
 	}
 
 	intIP, _ := regexp.Compile(`(10(\.[1-9]{1}[0-9]{1,2}){3})|(172(\.[1-9]{1}[0-9]{1,2}){3})|(192(\.[1-9]{1}[0-9]{1,2}){3})`)
-	jsFiles, _ := regexp.Compile(`src="([a-zA-Z0-9\./]+.js)"`)
+	jsFiles, _ := regexp.Compile(`src="([a-zA-Z0-9\./-_]+.js)"`)
 	urlFind, _ := regexp.Compile(`((/[a-zA-Z0-9\.]+){2,10})`)
 	/*awsKey, _ := regexp.Compile(`"(AKIA[0-9A-Z]{16})"`)
 	awsSecKey, _ := regexp.Compile(`"([0-9a-zA-Z/+]{40})"`)
